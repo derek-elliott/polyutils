@@ -1,4 +1,4 @@
-module gtihub.com/derek-elliott/polyutils
+module github.com/derek-elliott/polyutils
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
