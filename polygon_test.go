@@ -178,23 +178,12 @@ func TestPointInBBox(t *testing.T) {
 	}
 }
 
-func TestFromGeoJSON(t *testing.T) {
+func TestArrayToPoints(t *testing.T) {
 	assert := assert.New(t)
-	rawJSON := `{
-		  "type": "Feature",
-		  "geometry": {
-		     "type": "Polygon",
-		     "coordinates": [
-		         [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ]
-		     ]
-		  },
-		  "properties": {
-		    "name": "Dinagat Islands"
-		  }
-		}`
 
-	targetPoly := NewPolygon([]Point{Point{100.0, 0.0}, Point{101.0, 0.0}, Point{101.0, 1.0}, Point{100.0, 1.0}, Point{100.0, 0.0}})
-	poly, err := FromGeoJSON([]byte(rawJSON))
-	assert.NoError(err)
-	assert.Equal(poly, *targetPoly, "Should be equal")
+	rawPoints := [][]float64{[]float64{0, 0}, []float64{1, 0}, []float64{2, 1}, []float64{2, 2}, []float64{1, 3}, []float64{0, 3}, []float64{-1, 2}, []float64{-1, 1}, []float64{0, 0}}
+	target := []Point{Point{0, 0}, Point{1, 0}, Point{2, 1}, Point{2, 2}, Point{1, 3}, Point{0, 3}, Point{-1, 2}, Point{-1, 1}, Point{0, 0}}
+
+	points := ArrayToPoints(rawPoints)
+	assert.Equal(target, *points, "Points should be equal")
 }

@@ -1,9 +1,5 @@
 package polyutils
 
-import (
-	geojson "github.com/paulmach/go.geojson"
-)
-
 type Point struct {
 	X float64
 	Y float64
@@ -34,6 +30,15 @@ func NewPolygon(points []Point) *Polygon {
 	return &Polygon{points, boundingBox, xVerts, yVerts}
 }
 
+// ArrayToPoints converts an array of float64 into a list of points
+func ArrayToPoints(rawPoints [][]float64) *[]Point {
+	var points []Point
+	for _, item := range rawPoints {
+		points = append(points, Point{item[0], item[1]})
+	}
+	return &points
+}
+
 // Helper function to get the min and max from an array of numbers
 func getMinMax(data []float64) (min float64, max float64) {
 	min, max = data[0], data[0]
@@ -47,6 +52,7 @@ func getMinMax(data []float64) (min float64, max float64) {
 	return
 }
 
+// Contains returns true if the given point is contained in the polygon
 func (p *Polygon) Contains(point Point) bool {
 	if !p.BoundingBox.Contains(point) {
 		return false
@@ -61,10 +67,12 @@ func (p *Polygon) Contains(point Point) bool {
 	return contains
 }
 
+// InPolygon returns true if the given polygon contains the point
 func (p *Point) InPolygon(poly Polygon) bool {
 	return poly.Contains(*p)
 }
 
+// Contains returns true if the given point is in the bounding box
 func (bbox *BoundingBox) Contains(p Point) bool {
 	if (p.X <= bbox.Max.X) && (p.X >= bbox.Min.X) && (p.Y <= bbox.Max.Y) && (p.Y >= bbox.Min.Y) {
 		return true
@@ -73,19 +81,7 @@ func (bbox *BoundingBox) Contains(p Point) bool {
 	}
 }
 
+// InBoundingBox returns true if the given bounding box contains the point
 func (p *Point) InBoundingBox(bbox BoundingBox) bool {
 	return bbox.Contains(*p)
-}
-
-func FromGeoJSON(data []byte) (Polygon, error) {
-	feature, err := geojson.UnmarshalFeature(data)
-	if err != nil {
-		return Polygon{}, err
-	}
-	var points []Point
-	for _, point := range feature.Geometry.Polygon[0] {
-		points = append(points, Point{point[0], point[1]})
-	}
-	poly := NewPolygon(points)
-	return *poly, nil
 }
